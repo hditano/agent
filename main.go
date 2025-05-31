@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"runtime"
@@ -12,6 +13,11 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/process"
 )
+
+type response struct {
+	Page int           `json:"page"`
+	Data []interface{} `json:"vms"`
+}
 
 func main() {
 
@@ -40,6 +46,13 @@ func main() {
 			mainTable(platInformation, hostName, numProcess)
 			hardwareTable(mbMemory, freeMemory, c[0])
 			cpuTable(cpuModel[0].ModelName, cpuModel[0].Model, cpuModel[0].Mhz)
+
+			res := &response{
+				Page: 1,
+				Data: []interface{}{platInformation, hostName, numProcess, mbMemory, freeMemory, c[0], cpuModel[0].ModelName, cpuModel[0].Model, cpuModel[0].Mhz},
+			}
+			res1B, _ := json.Marshal(res)
+			fmt.Println(string(res1B))
 		}
 	}
 }
